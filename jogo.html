@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nosso Jogo de Amor ♡</title>
+<style>
+body {
+  margin: 0;
+  padding: 24px 16px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: #fff1f5;
+  color: #713b52;
+  font-family: Georgia, serif;
+}
+main {
+  width: 100%;
+  max-width: 500px;
+  padding: 28px;
+  box-sizing: border-box;
+  background: white;
+  border: 1px solid #f0d5df;
+  border-radius: 22px;
+  text-align: center;
+}
+h1, h2 { color: #a34e70; }
+p { line-height: 1.8; white-space: pre-line; }
+button, input {
+  width: 100%;
+  padding: 13px;
+  margin-top: 12px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  font-size: 16px;
+}
+button {
+  border: none;
+  background: #8d4562;
+  color: white;
+  cursor: pointer;
+}
+input { border: 1px solid #e7cbd6; }
+[hidden] { display: none !important; }
+#feedback { color: #a34e70; }
+</style>
+</head>
+<body>
+<main>
+  <section id="inicio">
+    <p>♡ UM SEGREDO SÓ NOSSO ♡</p>
+    <h1>O código do meu coração</h1>
+    <p>Meu amor, preparei uma pequena aventura para você.
+Cada resposta vai revelar um pedacinho do que sinto.</p>
+    <button id="comecar" type="button">Começar nossa aventura ♡</button>
+  </section>
+
+  <section id="jogo" hidden>
+    <p id="fase"></p>
+    <h2 id="pergunta"></h2>
+    <p id="historia"></p>
+    <form id="formulario">
+      <input id="resposta" placeholder="Sua resposta..." required>
+      <button type="submit">Desvendar ♡</button>
+    </form>
+    <p id="feedback" aria-live="polite"></p>
+    <button id="dica" type="button">Preciso de uma dica</button>
+    <p id="textoDica" hidden></p>
+    <button id="continuar" type="button" hidden>Continuar →</button>
+  </section>
+
+  <section id="fotos" hidden>
+    <h2>Nossas lembranças 📸</h2>
+    <p>Meu bem, cada lembrança nossa guarda algo que as palavras nem sempre conseguem explicar.</p>
+    <img src="fotos/ft1.jpeg" alt="Nossa lembrança"
+      style="width:100%;border-radius:14px">
+    <p>Quero guardar muitos outros momentos ao seu lado. ♡</p>
+    <button id="irFinal" type="button">Continuar nossa história</button>
+  </section>
+
+  <section id="final" hidden>
+    <h2>Para você, meu amor ♡</h2>
+    <p>Admiro sua beleza, sua delicadeza, seu esforço e a maneira como você se importa com as pequenas coisas, cada detalhe que faz a diferença, e eu sinto 
+        que posso entregar muito maiss não so agora mas em um futuro que estar por vir, eu sei que posso ouvir mais seus sentimentos, te acolher, mostrar mais atitudes não só como essas.
+
+Amo seu jeitinho carinhoso, dengoso e amoroso. Quero que você saiba que seus sentimentos são muitoo importantes para mim.
+
+Não prometo dias perfeitos, mas quero construir com você uma história feita de respeito, cuidado, conversas sinceras e carinho muitoooo mesmo.
+
+Quero estar presente nas suas conquistas, ouvir suas preocupações e conhecer cada vez mais o mundo que existe dentro de você e suas ideias, sonhos como que podemos realizar, tipo viajando o mundo e vc fazendo palestras, abrir sua ong e te ajudar,ter nossos filhos e muito mais.
+
+Eu te amo, meu bem. E quero continuar descobrindo novas razões para admirar você, um dia de cada vez. ❤️</p>
+    <button id="coracoes" type="button">Uma chuva de amor 💕</button>
+    <p id="animacao"></p>
+    <button id="reiniciar" type="button">Jogar novamente</button>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+
+  const enigmas = [
+    {
+      pergunta: "Primeira pista: o sentimento",
+      historia: "Não posso ser visto, mas posso ser sentido. Cresço com carinho e posso morar no coração. O que sou?",
+      respostas: ["amor"],
+      dica: "É o sentimento que inspirou este jogo.",
+      sucesso: "Assim começa nossa história. ♡"
+    },
+    {
+      pergunta: "Segunda pista: decifre o código",
+      historia: "Cada letra foi trocada pela próxima letra do alfabeto. Volte uma posição para descobrir: FV UF BNP",
+      respostas: ["eu te amo"],
+      dica: "F volta para E. V volta para U.",
+      sucesso: "Você descobriu a mensagem secreta! Agora, nossas fotos esperam por você. 💌"
+    },
+    {
+      pergunta: "Terceira pista: o que demonstramos?",
+      historia: "Apareço nos abraços, na atenção e nos pequenos gestos que mostram que alguém se importa. O que sou?",
+      respostas: ["carinho", "cuidado"],
+      dica: "É algo que você merece receber e também oferece.",
+      sucesso: "O amor também vive nos pequenos detalhes. 🌷"
+    },
+    {
+      pergunta: "Última pista: complete a frase",
+      historia: "Quero continuar descobrindo o mundo de _____. Qual palavra completa esta frase?",
+      respostas: ["voce"],
+      dica: "É a pessoa que está lendo esta mensagem.",
+      sucesso: "Você encontrou a última chave do meu coração! ❤️"
+    }
+  ];
+
+  let indice = 0;
+  let resolvido = false;
+
+  function mostrar(tela) {
+    ["inicio", "jogo", "fotos", "final"].forEach(id => {
+      $(id).hidden = id !== tela;
+    });
+  }
+
+  function normalizar(texto) {
+    return texto.trim().toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ");
+  }
+
+  function carregarEnigma() {
+    const e = enigmas[indice];
+    resolvido = false;
+    $("fase").textContent = "ENIGMA " + (indice + 1) + " DE " + enigmas.length;
+    $("pergunta").textContent = e.pergunta;
+    $("historia").textContent = e.historia;
+    $("resposta").value = "";
+    $("feedback").textContent = "";
+    $("textoDica").hidden = true;
+    $("textoDica").textContent = "";
+    $("dica").hidden = false;
+    $("continuar").hidden = true;
+    $("formulario").hidden = false;
+    mostrar("jogo");
+  }
+
+  $("comecar").addEventListener("click", function () {
+    indice = 0;
+    carregarEnigma();
+  });
+
+  $("formulario").addEventListener("submit", function (evento) {
+    evento.preventDefault();
+    if (resolvido) return;
+
+    const resposta = normalizar($("resposta").value);
+    const e = enigmas[indice];
+
+    if (e.respostas.some(r => normalizar(r) === resposta)) {
+      resolvido = true;
+      $("feedback").textContent = e.sucesso;
+      $("formulario").hidden = true;
+      $("dica").hidden = true;
+      $("continuar").hidden = false;
+      $("continuar").textContent =
+        indice === enigmas.length - 1
+          ? "Revelar declaração ♡"
+          : "Continuar →";
+    } else {
+      $("feedback").textContent = "Ainda não, meu amor. Tente novamente ou veja a dica. ♡";
+    }
+  });
+
+  $("dica").addEventListener("click", function () {
+    $("textoDica").textContent = enigmas[indice].dica;
+    $("textoDica").hidden = false;
+  });
+
+  $("continuar").addEventListener("click", function () {
+    if (!resolvido) return;
+
+    if (indice === 1) {
+      mostrar("fotos");
+      return;
+    }
+
+    if (indice === enigmas.length - 1) {
+      mostrar("final");
+      return;
+    }
+
+    indice++;
+    carregarEnigma();
+  });
+
+  $("irFinal").addEventListener("click", function () {
+    indice = 2;
+    carregarEnigma();
+  });
+
+  $("coracoes").addEventListener("click", function () {
+    $("animacao").textContent = "♡ 💗 💕 💖 💗 💕 ♡";
+  });
+
+  $("reiniciar").addEventListener("click", function () {
+    indice = 0;
+    resolvido = false;
+    mostrar("inicio");
+  });
+})();
+</script>
+</body>
+</html>
+
